@@ -16,7 +16,7 @@
     
     ArrayList<Letter> letters;
     float angle = 0;
-    Tree tree;
+    Tree t;
 
     float minDist = 5;
     float maxDist = 200;
@@ -33,8 +33,8 @@
       rotateY(angle);
       pushMatrix();
       translate(0, height/4);
-      tree.show();
-      tree.grow();
+      t.show();
+      t.grow();
       popMatrix();
 
       for (Letter l : letters) {
@@ -141,12 +141,7 @@
       void display() {
         textSize(30);
         rotateY(-30);
-        //pg.beginDraw();
-        //pg.textFont(f);
-        //pg.fill(255);
-        //pg.text(c, x, y, z);
         text(c, x, y, z);
-        //pg.endDraw();
       }
     }
 
