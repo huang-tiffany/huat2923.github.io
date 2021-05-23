@@ -14,12 +14,12 @@
     
     <script type="text/processing">
     
-    private ArrayList<Letter> letters;
-    private float angle = 0;
-    private Tree tree;
+    ArrayList<Letter> letters;
+    float angle = 0;
+    Tree tree;
 
-    private float minDist = 5;
-    private float maxDist = 200;
+    float minDist = 5;
+    float maxDist = 200;
 
     public void setup() {
       size(700, 700, P3D);
@@ -50,12 +50,12 @@
     }
 
     class Branch {
-      private Branch parent;
-      private PVector position;
-      private PVector dir;
-      private int count = 0;
-      private PVector saveDir;
-      private float len = 5;
+      Branch parent;
+      PVector position;
+      PVector dir;
+      int count = 0;
+      PVector saveDir;
+      float len = 5;
 
       Branch(PVector v, PVector d) {
         parent = null;
@@ -88,8 +88,8 @@
     }
 
     public class Leaf {
-      private PVector position;
-      private boolean reached;
+      PVector position;
+      boolean reached;
 
       public Leaf() {
         reached = false;
@@ -112,21 +112,19 @@
     }
 
     public class Letter {
-      private PFont f;
-      private float x;
-      private float y;
-      private float z;
-      private char c;
-      private PVector velocity;
-      private PVector acceleration;
-      //private PGraphics pg;
+      PFont f;
+      float x;
+      float y;
+      float z;
+      char c;
+      PVector velocity;
+      PVector acceleration;
       public Letter(char s) {
         c = s;
         x = random(-width/2, width/2);
         y = random(-height/2, height/2);
         z = random(-100, 100);
         f = createFont("font.ttf", 100);
-        //pg = new PGraphics();
         textFont(f);
 
         velocity = new PVector(0.001, 0.001, 0.001);
