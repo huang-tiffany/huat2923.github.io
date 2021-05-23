@@ -15,243 +15,233 @@
     <script type="text/processing">
     
     private ArrayList<Letter> letters;
-private float angle = 0;
-private Tree tree;
+    private float angle = 0;
+    private Tree tree;
 
-private float minDist = 5;
-private float maxDist = 200;
+    private float minDist = 5;
+    private float maxDist = 200;
 
-public void setup() {
-  size(700, 700, P3D);
-  letters = new ArrayList<Letter>();
-  tree = new Tree();
-}
-
-public void draw() {
-  background(0);
-  translate(width/2, height/2);
-  rotateY(angle);
-  pushMatrix();
-  translate(0, height/4);
-  tree.show();
-  tree.grow();
-  popMatrix();
-  
-  for (Letter l : letters) {
-    l.update();
-    l.display();
-  }
-  
-  angle += 0.003;
-}
-
-public void keyPressed() {
-  letters.add(new Letter(key));
-}
-
-// Coding Rainbow
-// Daniel Shiffman
-// http://patreon.com/codingtrain
-// Code for: https://youtu.be/JcopTKXt8L8
-
-class Branch {
-  private Branch parent;
-  private PVector position;
-  private PVector dir;
-  private int count = 0;
-  private PVector saveDir;
-  private float len = 5;
-  
-  Branch(PVector v, PVector d) {
-    parent = null;
-    position = v.copy();
-    dir = d.copy();
-    saveDir = dir.copy();
-  }
-
-  Branch(Branch p) {
-    parent = p;
-    position = parent.next();
-    dir = parent.dir.copy();
-    saveDir = dir.copy();
-  }
-
-  void reset() {
-    count = 0;
-    dir = saveDir.copy();
-  }
-
-  PVector next() {
-    PVector v = PVector.mult(dir, len);
-    PVector next = PVector.add(position, v);
-    return next;
-  }
-  
-  public PVector getPos() {
-    return position;
-  }
-}
-
-public class Leaf {
-  private PVector position;
-  private boolean reached;
-
-  public Leaf() {
-    reached = false;
-    position = PVector.random3D();
-    position.mult(random(width/4));
-    position.y -= height/4;
-  }
-
-  public void reached() {
-    reached = true;
-  }
-  
-  public PVector getPos() {
-    return position;
-  }
-  
-  public boolean getR() {
-    return reached;
-  }
-}
-
-public class Letter {
-  private PFont f;
-  private float x;
-  private float y;
-  private float z;
-  private char c;
-  private PVector velocity;
-  private PVector acceleration;
-  //private PGraphics pg;
-  public Letter(char s) {
-    c = s;
-    x = random(-width/2, width/2);
-    y = random(-height/2, height/2);
-    z = random(-100, 100);
-    f = createFont("font.ttf", 100);
-    //pg = new PGraphics();
-    textFont(f);
-    
-    velocity = new PVector(0.001, 0.001, 0.001);
-    acceleration = new PVector(0.003, 0.003, 0.003);
-  }
-  
-  public void update() {
-    velocity.add(acceleration);
-    x += velocity.x;
-    y += velocity.y;
-    z += velocity.z;
-  }
-    
-  public void display() {
-    textSize(30);
-    rotateY(-30);
-    //pg.beginDraw();
-    //pg.textFont(f);
-    //pg.fill(255);
-    //pg.text(c, x, y, z);
-    text(c, x, y, z);
-    //pg.endDraw();
-  }
-}
-
-// Coding Rainbow
-// Daniel Shiffman
-// http://patreon.com/codingtrain
-// Code for: https://youtu.be/JcopTKXt8L8
-
-class Tree {
-  ArrayList<Branch> branches = new ArrayList<Branch>();
-  ArrayList<Leaf> leaves = new ArrayList<Leaf>();
-
-  Tree() {
-    for (int i = 0; i < 100; i++) {
-      leaves.add(new Leaf());
-    }    
-    Branch root = new Branch(new PVector(0, height/4), new PVector(0, -1));
-    branches.add(root);
-    Branch current = new Branch(root);
-
-    while (!closeEnough(current)) {
-      Branch trunk = new Branch(current);
-      branches.add(trunk);
-      current = trunk;
+    public void setup() {
+      size(700, 700, P3D);
+      letters = new ArrayList<Letter>();
+      tree = new Tree();
     }
-  }
 
-  boolean closeEnough(Branch b) {
-    for (Leaf l : leaves) {
-      float d = PVector.dist(b.getPos(), l.getPos());
-      if (d < maxDist) {
-        return true;
+    public void draw() {
+      background(0);
+      translate(width/2, height/2);
+      rotateY(angle);
+      pushMatrix();
+      translate(0, height/4);
+      tree.show();
+      tree.grow();
+      popMatrix();
+
+      for (Letter l : letters) {
+        l.update();
+        l.display();
+      }
+
+      angle += 0.003;
+    }
+
+    public void keyPressed() {
+      letters.add(new Letter(key));
+    }
+
+    class Branch {
+      private Branch parent;
+      private PVector position;
+      private PVector dir;
+      private int count = 0;
+      private PVector saveDir;
+      private float len = 5;
+
+      Branch(PVector v, PVector d) {
+        parent = null;
+        position = v.copy();
+        dir = d.copy();
+        saveDir = dir.copy();
+      }
+
+      Branch(Branch p) {
+        parent = p;
+        position = parent.next();
+        dir = parent.dir.copy();
+        saveDir = dir.copy();
+      }
+
+      void reset() {
+        count = 0;
+        dir = saveDir.copy();
+      }
+
+      PVector next() {
+        PVector v = PVector.mult(dir, len);
+        PVector next = PVector.add(position, v);
+        return next;
+      }
+
+      public PVector getPos() {
+        return position;
       }
     }
-    return false;
-  }
 
-  void grow() {
-    for (Leaf l : leaves) {
-      Branch closest = null;
-      PVector closestDir = null;
-      float record = -1;
+    public class Leaf {
+      private PVector position;
+      private boolean reached;
 
-      for (Branch b : branches) {
-        PVector dir = PVector.sub(l.getPos(), b.getPos());
-        float d = dir.mag();
-        if (d < minDist) {
-          l.reached();
-          closest = null;
-          break;
-        } else if (d > maxDist) {
-        } else if (closest == null || d < record) {
-          closest = b;
-          closestDir = dir;
-          record = d;
+      public Leaf() {
+        reached = false;
+        position = PVector.random3D();
+        position.mult(random(width/4));
+        position.y -= height/4;
+      }
+
+      public void reached() {
+        reached = true;
+      }
+
+      public PVector getPos() {
+        return position;
+      }
+
+      public boolean getR() {
+        return reached;
+      }
+    }
+
+    public class Letter {
+      private PFont f;
+      private float x;
+      private float y;
+      private float z;
+      private char c;
+      private PVector velocity;
+      private PVector acceleration;
+      //private PGraphics pg;
+      public Letter(char s) {
+        c = s;
+        x = random(-width/2, width/2);
+        y = random(-height/2, height/2);
+        z = random(-100, 100);
+        f = createFont("font.ttf", 100);
+        //pg = new PGraphics();
+        textFont(f);
+
+        velocity = new PVector(0.001, 0.001, 0.001);
+        acceleration = new PVector(0.003, 0.003, 0.003);
+      }
+
+      public void update() {
+        velocity.add(acceleration);
+        x += velocity.x;
+        y += velocity.y;
+        z += velocity.z;
+      }
+
+      public void display() {
+        textSize(30);
+        rotateY(-30);
+        //pg.beginDraw();
+        //pg.textFont(f);
+        //pg.fill(255);
+        //pg.text(c, x, y, z);
+        text(c, x, y, z);
+        //pg.endDraw();
+      }
+    }
+
+    class Tree {
+      ArrayList<Branch> branches = new ArrayList<Branch>();
+      ArrayList<Leaf> leaves = new ArrayList<Leaf>();
+
+      Tree() {
+        for (int i = 0; i < 100; i++) {
+          leaves.add(new Leaf());
+        }    
+        Branch root = new Branch(new PVector(0, height/4), new PVector(0, -1));
+        branches.add(root);
+        Branch current = new Branch(root);
+
+        while (!closeEnough(current)) {
+          Branch trunk = new Branch(current);
+          branches.add(trunk);
+          current = trunk;
         }
       }
-      if (closest != null) {
-        closestDir.normalize();
-        closest.dir.add(closestDir);
-        closest.count++;
-      }
-    }
 
-    for (int i = leaves.size()-1; i >= 0; i--) {
-      if (leaves.get(i).reached) {
-        leaves.remove(i);
+      boolean closeEnough(Branch b) {
+        for (Leaf l : leaves) {
+          float d = PVector.dist(b.getPos(), l.getPos());
+          if (d < maxDist) {
+            return true;
+          }
+        }
+        return false;
       }
-    }
 
-    for (int i = branches.size() - 1; i >= 0; i--) {
-      Branch b = branches.get(i);
-      if (b.count > 0) {
-        b.dir.div(b.count);
-        PVector rand = PVector.random2D();
-        rand.setMag(0.3);
-        b.dir.add(rand);
-        b.dir.normalize();
-        Branch newB = new Branch(b);
-        branches.add(newB);
-        b.reset();
-      }
-    }
-  }
+      void grow() {
+        for (Leaf l : leaves) {
+          Branch closest = null;
+          PVector closestDir = null;
+          float record = -1;
 
-  void show() {
-    for (int i = 0; i < branches.size(); i++) {
-      Branch b = branches.get(i);
-      if (b.parent != null) {
-        //float sw = map(i, 0, branches.size(), 3, 0);
-        strokeWeight(1000/i);
-        stroke(255);
-        line(b.getPos().x, b.getPos().y, b.getPos().z, 
-             b.parent.getPos().x, b.parent.getPos().y, b.parent.getPos().z);
+          for (Branch b : branches) {
+            PVector dir = PVector.sub(l.getPos(), b.getPos());
+            float d = dir.mag();
+            if (d < minDist) {
+              l.reached();
+              closest = null;
+              break;
+            } else if (d > maxDist) {
+            } else if (closest == null || d < record) {
+              closest = b;
+              closestDir = dir;
+              record = d;
+            }
+          }
+          if (closest != null) {
+            closestDir.normalize();
+            closest.dir.add(closestDir);
+            closest.count++;
+          }
+        }
+
+        for (int i = leaves.size()-1; i >= 0; i--) {
+          if (leaves.get(i).reached) {
+            leaves.remove(i);
+          }
+        }
+
+        for (int i = branches.size() - 1; i >= 0; i--) {
+          Branch b = branches.get(i);
+          if (b.count > 0) {
+            b.dir.div(b.count);
+            PVector rand = PVector.random2D();
+            rand.setMag(0.3);
+            b.dir.add(rand);
+            b.dir.normalize();
+            Branch newB = new Branch(b);
+            branches.add(newB);
+            b.reset();
+          }
+        }
+      }
+
+      void show() {
+        for (int i = 0; i < branches.size(); i++) {
+          Branch b = branches.get(i);
+          if (b.parent != null) {
+            //float sw = map(i, 0, branches.size(), 3, 0);
+            strokeWeight(1000/i);
+            stroke(255);
+            line(b.getPos().x, b.getPos().y, b.getPos().z, 
+                 b.parent.getPos().x, b.parent.getPos().y, b.parent.getPos().z);
+          }
+        }
       }
     }
-  }
-}
 
 
     </script>
