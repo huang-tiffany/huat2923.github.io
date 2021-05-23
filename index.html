@@ -21,13 +21,13 @@
     float minDist = 5;
     float maxDist = 200;
 
-    public void setup() {
+    void setup() {
       size(700, 700, P3D);
       letters = new ArrayList<Letter>();
       tree = new Tree();
     }
 
-    public void draw() {
+    void draw() {
       background(0);
       translate(width/2, height/2);
       rotateY(angle);
@@ -45,7 +45,7 @@
       angle += 0.003;
     }
 
-    public void keyPressed() {
+    void keyPressed() {
       letters.add(new Letter(key));
     }
 
@@ -87,31 +87,31 @@
       }
     }
 
-    public class Leaf {
+    class Leaf {
       PVector position;
       boolean reached;
 
-      public Leaf() {
+      Leaf() {
         reached = false;
         position = PVector.random3D();
         position.mult(random(width/4));
         position.y -= height/4;
       }
 
-      public void reached() {
+      void reached() {
         reached = true;
       }
 
-      public PVector getPos() {
+      PVector getPos() {
         return position;
       }
 
-      public boolean getR() {
+      boolean getR() {
         return reached;
       }
     }
 
-    public class Letter {
+    class Letter {
       PFont f;
       float x;
       float y;
@@ -119,7 +119,7 @@
       char c;
       PVector velocity;
       PVector acceleration;
-      public Letter(char s) {
+      Letter(char s) {
         c = s;
         x = random(-width/2, width/2);
         y = random(-height/2, height/2);
@@ -131,14 +131,14 @@
         acceleration = new PVector(0.003, 0.003, 0.003);
       }
 
-      public void update() {
+      void update() {
         velocity.add(acceleration);
         x += velocity.x;
         y += velocity.y;
         z += velocity.z;
       }
 
-      public void display() {
+      void display() {
         textSize(30);
         rotateY(-30);
         //pg.beginDraw();
