@@ -1,0 +1,402 @@
+<!Doctype: HTML w/ Processing>
+
+<html>
+
+  <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <title>Processing Demo</title>
+      <script type="text/javascript" src="js/processing.js"></script>
+  </head>
+  
+  <body>
+    <h1>Granada High Tutorial</h1>
+    <p>Processing demo</p>
+    
+    <script type="text/processing">
+    
+    import processing.sound.*;
+    private FFT fft;
+    private SoundFile in;
+    private int bands;
+    private float[] spectrum;
+    private SoundBar soundbar;
+    private Ring w;
+    private ArrayList<Ring> rings;
+    private int audioLength;
+    private int seconds;
+    private float displayWidth;
+
+    public void setup() {
+      frameRate(18);
+      size(700, 700);
+      bands = 512;
+      fft = new FFT(this, bands);
+      in = new SoundFile(this, "Tiffany copy.mp3");
+      in.play();
+      fft.input(in);
+      spectrum = new float[bands];
+      soundbar = new SoundBar(bands); 
+      rings = new ArrayList<Ring>();
+      w = new Ring(seconds);
+      w.resize(0.3);
+      audioLength = (int) in.duration();
+      for (int i = 0; i < audioLength / 10; i++) {
+        rings.add(new Ring(i * 10));
+      }
+    }
+
+    public void draw() {
+      background(0);
+      displayWidth = (width / 2) - 20;
+      for (Ring ring : rings) {
+        w = ring;
+        w.display();
+        seconds = millis() / 1000;
+        if (seconds < w.getTime() + 10) {
+          int r = soundbar.getR();
+          int g = soundbar.getG();
+          int b = soundbar.getB();
+          w.setStroke(r, g, b);
+          w.wiggle();
+        }
+        if (seconds < audioLength) {
+          if (w.getWidth() < displayWidth) {
+            if (seconds > w.getTime() + 10) {
+              w.resize(1.001);
+            }
+          }
+          displayWidth = w.getWidth() - 10;
+        }
+      }
+      soundbar.display();
+    }
+    
+    import processing.sound.*;
+
+    public class SoundBar {
+      private int bands;
+      private int[] rgb = {100, 100, 100};
+      private float x;
+      private float y;
+
+      public SoundBar(int b) {
+        x = width / 2;
+        y = height / 2;
+        bands = b;
+      }
+
+      public void display() {
+        fft.analyze(spectrum);
+        for(int i = 0; i < bands; i++){
+          pushMatrix();
+          translate(x, y);
+          rotate(radians(i * 0.7 * 20));
+          if (spectrum[i] * 1000 < 0.125) {
+            stroke(255, 0, 0);
+
+
+            //if (i > 1) {
+            //  rgb[0] *= (i - 1);
+            //  rgb[1] *= (i - 1);
+            //  rgb[2] *= (i - 1);
+
+              rgb[0] = 255;
+              rgb[1] = 0;
+              rgb[2] = 0;
+
+            //  rgb[0] /= i;
+            //  rgb[1] /= i;
+            //  rgb[2] /= i;
+            //}
+          } else if (spectrum[i] * 1000 < 0.25) {
+            stroke(206, 154, 255);
+
+
+            //if (i > 1) {
+            //  rgb[0] *= (i - 1);
+            //  rgb[1] *= (i - 1);
+            //  rgb[2] *= (i - 1);
+
+              rgb[0] = 206;
+              rgb[1] = 154;
+              rgb[2] = 255;
+
+              //rgb[0] /= i;
+              //rgb[1] /= i;
+              //rgb[2] /= i;
+            //}
+          } else if (spectrum[i] * 1000 < 0.5) {
+            stroke(255, 255, 0);
+
+
+            //if (i > 1) {
+            //  rgb[0] *= (i - 1);
+            //  rgb[1] *= (i - 1);
+            //  rgb[2] *= (i - 1);
+
+              rgb[0] = 255;
+              rgb[1] = 255;
+              rgb[2] = 0;
+
+            //  rgb[0] /= i;
+            //  rgb[1] /= i;
+            //  rgb[2] /= i;
+            //}
+          } else if (spectrum[i] * 1000 < 1) {
+            stroke(101, 101, 153);
+
+
+            //if (i > 1) {
+            //  rgb[0] *= (i - 1);
+            //  rgb[1] *= (i - 1);
+            //  rgb[2] *= (i - 1);
+
+              rgb[0] = 101;
+              rgb[1] = 101;
+              rgb[2] = 153;
+
+            //  rgb[0] /= i;
+            //  rgb[1] /= i;
+            //  rgb[2] /= i;
+            //}
+          } else if (spectrum[i] * 1000 < 2) {
+            stroke(227, 251, 255);
+
+
+            //if (i > 1) {
+            //  rgb[0] *= (i - 1);
+            //  rgb[1] *= (i - 1);
+            //  rgb[2] *= (i - 1);
+
+              rgb[0] = 227;
+              rgb[1] = 251;
+              rgb[2] = 255;
+
+            //  rgb[0] /= i;
+            //  rgb[1] /= i;
+            //  rgb[2] /= i;
+            //}
+          } else if (spectrum[i] * 1000 < 4) {
+            stroke(172, 28, 2);
+
+
+            //if (i > 1) {
+            //  rgb[0] *= (i - 1);
+            //  rgb[1] *= (i - 1);
+            //  rgb[2] *= (i - 1);
+
+              rgb[0] = 172;
+              rgb[1] = 28;
+              rgb[2] = 2;
+
+            //  rgb[0] /= i;
+            //  rgb[1] /= i;
+            //  rgb[2] /= i;
+            //}
+          } else if (spectrum[i] * 1000 < 8) {
+            stroke(0, 204, 255);
+
+
+            //if (i > 1) {
+            //  rgb[0] *= (i - 1);
+            //  rgb[1] *= (i - 1);
+            //  rgb[2] *= (i - 1);
+
+              rgb[0] = 0;
+              rgb[1] = 204;
+              rgb[2] = 255;
+
+            //  rgb[0] /= i;
+            //  rgb[1] /= i;
+            //  rgb[2] /= i;
+            //}
+          } else if (spectrum[i] * 1000 < 16) {
+            stroke(255, 101, 1);
+
+
+            //if (i > 1) {
+            //  rgb[0] *= (i - 1);
+            //  rgb[1] *= (i - 1);
+            //  rgb[2] *= (i - 1);
+
+              rgb[0] = 255;
+              rgb[1] = 101;
+              rgb[2] = 1;
+
+            //  rgb[0] /= i;
+            //  rgb[1] /= i;
+            //  rgb[2] /= i;
+            //}
+          } else if (spectrum[i] * 1000 < 32) {
+            stroke(255, 0, 255);
+
+
+            //if (i > 1) {
+            //  rgb[0] *= (i - 1);
+            //  rgb[1] *= (i - 1);
+            //  rgb[2] *= (i - 1);
+
+              rgb[0] = 255;
+              rgb[1] = 0;
+              rgb[2] = 255;
+
+            //  rgb[0] /= i;
+            //  rgb[1] /= i;
+            //  rgb[2] /= i;
+            //}
+          } else if (spectrum[i] * 1000 < 64) {
+            stroke(51, 204, 51);
+
+
+            //if (i > 1) {
+            //  rgb[0] *= (i - 1);
+            //  rgb[1] *= (i - 1);
+            //  rgb[2] *= (i - 1);
+
+              rgb[0] = 51;
+              rgb[1] = 204;
+              rgb[2] = 51;
+
+            //  rgb[0] /= i;
+            //  rgb[1] /= i;
+            //  rgb[2] /= i;
+            //}
+          } else if (spectrum[i] * 1000 < 128) {
+            stroke(140, 138, 140);
+
+
+            //if (i > 1) {
+            //  rgb[0] *= (i - 1);
+            //  rgb[1] *= (i - 1);
+            //  rgb[2] *= (i - 1);
+
+              rgb[0] = 140;
+              rgb[1] = 138;
+              rgb[2] = 140;
+
+            //  rgb[0] /= i;
+            //  rgb[1] /= i;
+            //  rgb[2] /= i;
+            //}
+          } else {
+            stroke(0, 0, 254);
+
+
+            //if (i > 1) {
+            //  rgb[0] *= (i - 1);
+            //  rgb[1] *= (i - 1);
+            //  rgb[2] *= (i - 1);
+
+              rgb[0] = 0;
+              rgb[1] = 0;
+              rgb[2] = 254;
+
+            //  rgb[0] /= i;
+            //  rgb[1] /= i;
+            //  rgb[2] /= i;
+            //}
+          }
+          line (0, 0, spectrum[i]*500, spectrum[i]*500);
+          popMatrix();
+        }
+
+        fill(0);
+        ellipseMode(CENTER);
+        ellipse(x, y, 5, 5);
+      }
+
+      public int getR() {
+        return rgb[0];
+      }
+
+      public int getG() {
+        return rgb[1];
+      }
+
+      public int getB() {
+        return rgb[2];
+      }
+    }
+    
+    public class Ring {
+      private PShape s;
+      private float x;
+      private float y;
+      private int timeCreated;
+      private ArrayList<PVector> original;
+
+      public Ring (int t) {
+        timeCreated = t;
+        x = width / 2;
+        y = height / 2; 
+
+        original = new ArrayList<PVector>();
+        for (float a = 0; a < TWO_PI; a+=0.2) {
+          PVector v = PVector.fromAngle(a);
+          v.mult(50);
+          original.add(v);
+        }
+
+        s = createShape();
+        s.beginShape();
+        s.noFill();
+        s.stroke(255);
+        s.strokeWeight(0.25);
+        for (PVector v : original) {
+          s.vertex(v.x, v.y);
+        }
+        s.endShape(CLOSE);
+      }
+
+      public int getTime() {
+        return timeCreated;
+      }
+
+      public float getWidth() {
+        return s.width;
+      }
+
+      public void wiggle() {
+        float xoff = 0;
+        float yoff = 0;
+        float offset;
+        for (int i = 0; i < s.getVertexCount(); i++) {
+          offset = spectrum[i]*10000;
+          PVector pos = original.get(i);
+          float a = TWO_PI*offset;
+          PVector r = PVector.fromAngle(a);
+          r.mult(offset/100);
+          r.add(pos);
+          s.setVertex(i, r.x, r.y);
+          xoff += offset;
+          yoff += offset;
+        }
+      }
+
+      public void setStroke(int r, int g, int b) {
+        s.setStroke(color(r, g, b));
+      }
+
+      public void resize(float newSize) {
+        s.scale(newSize);
+        s.width *= newSize;
+        s.height *= newSize;
+      }
+
+      public void display() {
+        pushMatrix();
+        translate(x, y);
+        for (int i = 0; i < bands; i++) {
+          rotate(radians(i * 0.7 * 20));
+        }
+        shape(s);
+        popMatrix();
+      }
+    }
+
+    </script>
+    <canvas id="sketch" style="border: 1px solid black;"></canvas>
+    
+  </body>
+  
+</html>
