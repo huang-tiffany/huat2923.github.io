@@ -116,6 +116,30 @@
         return position;
       }
     }
+    
+    public class Leaf {
+      private PVector position;
+      private boolean reached;
+
+      public Leaf() {
+        reached = false;
+        position = PVector.random3D();
+        position.mult(random(width/4));
+        position.y -= height/4;
+      }
+
+      public void reached() {
+        reached = true;
+      }
+
+      public PVector getPos() {
+        return position;
+      }
+
+      public boolean getR() {
+        return reached;
+      }
+    }
 
     </script>
     <canvas id="sketch" style="border: 1px solid black;"></canvas>
