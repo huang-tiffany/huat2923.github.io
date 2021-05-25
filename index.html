@@ -79,6 +79,43 @@
       }
     }
 
+    public class Branch {
+      private Branch parent;
+      private PVector position;
+      private PVector dir;
+      private int count = 0;
+      private PVector saveDir;
+      private float len = 5;
+
+      public Branch(PVector v, PVector d) {
+        parent = null;
+        position = v.copy();
+        dir = d.copy();
+        saveDir = dir.copy();
+      }
+
+      public Branch(Branch p) {
+        parent = p;
+        position = parent.next();
+        dir = parent.dir.copy();
+        saveDir = dir.copy();
+      }
+
+      public void reset() {
+        count = 0;
+        dir = saveDir.copy();
+      }
+
+      public PVector next() {
+        PVector v = PVector.mult(dir, len);
+        PVector next = PVector.add(position, v);
+        return next;
+      }
+
+      public PVector getPos() {
+        return position;
+      }
+    }
 
     </script>
     <canvas id="sketch" style="border: 1px solid black;"></canvas>
