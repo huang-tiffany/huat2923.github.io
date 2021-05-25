@@ -16,6 +16,7 @@
     
     ArrayList<Letter> letters;
     float angle = 0;
+    private Tree tree;
 
     float minDist = 5;
     float maxDist = 200;
@@ -23,6 +24,7 @@
     void setup() {
       size(700, 700, P3D);
       letters = new ArrayList<Letter>();
+      tree = new Tree();
     }
 
     void draw() {
@@ -31,6 +33,8 @@
       rotateY(angle);
       pushMatrix();
       translate(0, height/4);
+      tree.show();
+      tree.grow();
       popMatrix();
 
       for (Letter l : letters) {
