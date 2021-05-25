@@ -16,7 +16,6 @@
     
     ArrayList<Letter> letters;
     float angle = 0;
-    Tree t;
 
     float minDist = 5;
     float maxDist = 200;
@@ -24,7 +23,6 @@
     void setup() {
       size(700, 700, P3D);
       letters = new ArrayList<Letter>();
-      tree = new Tree();
     }
 
     void draw() {
@@ -33,8 +31,6 @@
       rotateY(angle);
       pushMatrix();
       translate(0, height/4);
-      t.show();
-      t.grow();
       popMatrix();
 
       for (Letter l : letters) {
@@ -47,68 +43,6 @@
 
     void keyPressed() {
       letters.add(new Letter(key));
-    }
-
-    class Branch {
-      Branch parent;
-      PVector position;
-      PVector dir;
-      int count = 0;
-      PVector saveDir;
-      float len = 5;
-
-      Branch(PVector v, PVector d) {
-        parent = null;
-        position = v.copy();
-        dir = d.copy();
-        saveDir = dir.copy();
-      }
-
-      Branch(Branch p) {
-        parent = p;
-        position = parent.next();
-        dir = parent.dir.copy();
-        saveDir = dir.copy();
-      }
-
-      void reset() {
-        count = 0;
-        dir = saveDir.copy();
-      }
-
-      PVector next() {
-        PVector v = PVector.mult(dir, len);
-        PVector next = PVector.add(position, v);
-        return next;
-      }
-
-      public PVector getPos() {
-        return position;
-      }
-    }
-
-    class Leaf {
-      PVector position;
-      boolean reached;
-
-      Leaf() {
-        reached = false;
-        position = PVector.random3D();
-        position.mult(random(width/4));
-        position.y -= height/4;
-      }
-
-      void reached() {
-        reached = true;
-      }
-
-      PVector getPos() {
-        return position;
-      }
-
-      boolean getR() {
-        return reached;
-      }
     }
 
     class Letter {
@@ -142,97 +76,6 @@
         textSize(30);
         rotateY(-30);
         text(c, x, y, z);
-      }
-    }
-
-    class Tree {
-      ArrayList<Branch> branches = new ArrayList<Branch>();
-      ArrayList<Leaf> leaves = new ArrayList<Leaf>();
-
-      Tree() {
-        for (int i = 0; i < 100; i++) {
-          leaves.add(new Leaf());
-        }    
-        Branch root = new Branch(new PVector(0, height/4), new PVector(0, -1));
-        branches.add(root);
-        Branch current = new Branch(root);
-
-        while (!closeEnough(current)) {
-          Branch trunk = new Branch(current);
-          branches.add(trunk);
-          current = trunk;
-        }
-      }
-
-      boolean closeEnough(Branch b) {
-        for (Leaf l : leaves) {
-          float d = PVector.dist(b.getPos(), l.getPos());
-          if (d < maxDist) {
-            return true;
-          }
-        }
-        return false;
-      }
-
-      void grow() {
-        for (Leaf l : leaves) {
-          Branch closest = null;
-          PVector closestDir = null;
-          float record = -1;
-
-          for (Branch b : branches) {
-            PVector dir = PVector.sub(l.getPos(), b.getPos());
-            float d = dir.mag();
-            if (d < minDist) {
-              l.reached();
-              closest = null;
-              break;
-            } else if (d > maxDist) {
-            } else if (closest == null || d < record) {
-              closest = b;
-              closestDir = dir;
-              record = d;
-            }
-          }
-          if (closest != null) {
-            closestDir.normalize();
-            closest.dir.add(closestDir);
-            closest.count++;
-          }
-        }
-
-        for (int i = leaves.size()-1; i >= 0; i--) {
-          if (leaves.get(i).reached) {
-            leaves.remove(i);
-          }
-        }
-
-        for (int i = branches.size() - 1; i >= 0; i--) {
-          Branch b = branches.get(i);
-          if (b.count > 0) {
-            b.dir.div(b.count);
-            PVector rand = PVector.random2D();
-            rand.setMag(0.3);
-            b.dir.add(rand);
-            b.dir.normalize();
-            Branch newB = new Branch(b);
-            branches.add(newB);
-            b.reset();
-          }
-        }
-      }
-
-      void show() {
-        for (int i = 0; i < branches.size(); i++) {
-          Branch b = branches.get(i);
-          if (b.parent != null) {
-            //float sw = map(i, 0, branches.size(), 3, 0);
-            strokeWeight(1000/i);
-            stroke(255);
-            line(b.getPos().x, b.getPos().y, b.getPos().z, 
-                 b.parent.getPos().x, b.parent.getPos().y, b.parent.getPos().z);
-          }
-        }
       }
     }
 
